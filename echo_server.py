@@ -64,8 +64,7 @@ def server(log_buffer=sys.stderr):
                     # message is a trick we learned in the lesson: if you don't
                     # remember then ask your classmates or instructor for a clue.
                     # :)
-                    if len(data) < 16:
-                        break
+                    if not data: break
             except Exception as e:
                 traceback.print_exc()
                 sys.exit(1)
@@ -73,6 +72,7 @@ def server(log_buffer=sys.stderr):
                 # TODO: When the inner loop exits, this 'finally' clause will
                 #       be hit. Use that opportunity to close the socket you
                 #       created above when a client connected.
+                conn.close()
                 print(
                     'echo complete, client connection closed', file=log_buffer
                 )
@@ -82,7 +82,7 @@ def server(log_buffer=sys.stderr):
         #       close the server socket and exit from the server function.
         #       Replace the call to `pass` below, which is only there to
         #       prevent syntax problems
-        pass
+        sock.close()
         print('quitting echo server', file=log_buffer)
 
 
