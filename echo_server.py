@@ -15,7 +15,7 @@ def server(log_buffer=sys.stderr):
     #       in class. Find the correct option by reading the very end of the
     #       socket library documentation:
     #       http://docs.python.org/3/library/socket.html#example
-
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     # log that we are building a server
     print("making a server on {0}:{1}".format(*address), file=log_buffer)
 
@@ -36,6 +36,7 @@ def server(log_buffer=sys.stderr):
             #       following line with your code. It is only here to prevent
             #       syntax errors
             conn, addr = sock.accept()
+
             try:
                 print('connection - {0}:{1}'.format(*addr), file=log_buffer)
 
@@ -54,8 +55,10 @@ def server(log_buffer=sys.stderr):
                     # TODO: Send the data you received back to the client, log
                     # the fact using the print statement here.  It will help in
                     # debugging problems.
+                    # conn.sendall(data)
                     print('sent "{0}"'.format(data.decode('utf8')))
                     conn.sendall(data)
+                    
                     # TODO: Check here to see whether you have received the end
                     # of the message. If you have, then break from the `while True`
                     # loop.
@@ -64,8 +67,12 @@ def server(log_buffer=sys.stderr):
                     # message is a trick we learned in the lesson: if you don't
                     # remember then ask your classmates or instructor for a clue.
                     # :)
-                    if not data: break
+                    if len(data) < 16:
+                        conn.close()
+                        break
             except Exception as e:
+                print('\nError occured in server: {}'.format(e))
+                conn.close()
                 traceback.print_exc()
                 sys.exit(1)
             finally:
@@ -74,9 +81,8 @@ def server(log_buffer=sys.stderr):
                 #       created above when a client connected.
                 conn.close()
                 print(
-                    'echo complete, client connection closed', file=log_buffer
+                    'echo complete, client connection closed\n', file=log_buffer
                 )
-
     except KeyboardInterrupt:
         # TODO: Use the python KeyboardInterrupt exception as a signal to
         #       close the server socket and exit from the server function.

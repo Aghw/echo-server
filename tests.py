@@ -12,7 +12,7 @@ class EchoTestCase(unittest.TestCase):
         In case of a socket error, fail and report the problem
         """
         try:
-            reply = client(message)
+            reply = client(message.encode('utf8'))
         except socket.error as e:
             if e.errno == 61:
                 msg = "Error: {0}, is the server running?"

@@ -4,7 +4,8 @@ import traceback
 
 
 def client(msg, log_buffer=sys.stderr):
-    server_address = ('localhost', 10000)
+    # server_address = ('localhost', 10000)
+    server_address = ('127.0.0.1', 10000)
     # TODO: Replace the following line with your code which will instantiate
     #       a TCP socket with IPv4 Addressing, call the socket you make 'sock'
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
@@ -13,14 +14,14 @@ def client(msg, log_buffer=sys.stderr):
     sock.connect(server_address)
     # you can use this variable to accumulate the entire message received back
     # from the server
-    received_message = ''
+    received_message = b''
 
     # this try/finally block exists purely to allow us to close the socket
     # when we are finished with it
     try:
         print('sending "{0}"'.format(msg), file=log_buffer)
         # TODO: send your message to the server here.
-        msg = b'The red fox chased the yellow dog from the park to the house.'
+        # msg = b'The red fox chased the yellow dog from the park to the house.'
         sock.sendall(msg)
         # TODO: the server should be sending you back your message as a series
         #       of 16-byte chunks. Accumulate the chunks you get to build the
@@ -30,23 +31,25 @@ def client(msg, log_buffer=sys.stderr):
         #       Log each chunk you receive.  Use the print statement below to
         #       do it. This will help in debugging problems
         chunk = b''
+        
         while True:
-            recieved_message = sock.recv(16)
-            chunk += recieved_message
-
+            chunk = sock.recv(16)
             if not chunk: break
-        print('received "{0}"'.format(chunk.decode('utf8')), file=log_buffer)
+            received_message = received_message + chunk
+            
+        print('received "{0}"'.format(received_message.decode('utf8')), file=log_buffer)
     except Exception as e:
         traceback.print_exc()
+        print(f"\nException occured while reading data from server. {e}")
         sys.exit(1)
     finally:
         # TODO: after you break out of the loop receiving echoed chunks from
         #       the server you will want to close your client socket.
-        print('closing socket', file=log_buffer)
-
+        print('closing socket\n', file=log_buffer)
+        sock.close()
         # TODO: when all is said and done, you should return the entire reply
         # you received from the server as the return value of this function.
-
+        return received_message.decode('utf8')
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
