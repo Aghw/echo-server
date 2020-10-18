@@ -33,10 +33,10 @@ def client(msg, log_buffer=sys.stderr):
         
         while True:
             chunk = sock.recv(16)
-            if not chunk: break
+            # if not chunk: break
             received_message = received_message + chunk
-            
-        print('received "{0}"'.format(received_message.decode('utf8')), file=log_buffer)
+            print('received "{0}"'.format(received_message.decode('utf8')), file=log_buffer)
+            if not chunk: break
     except Exception as e:
         traceback.print_exc()
         print(f"\nException occured while reading data from server. {e}")

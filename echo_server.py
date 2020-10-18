@@ -69,6 +69,9 @@ def server(log_buffer=sys.stderr):
                     if len(data) < 16:
                         conn.close()
                         break
+                # if data == '\r\n':
+                #     conn.close()
+                #     sock.close()
             except Exception as e:
                 print('\nError occured in server: {}'.format(e))
                 conn.close()
@@ -78,10 +81,12 @@ def server(log_buffer=sys.stderr):
                 # TODO: When the inner loop exits, this 'finally' clause will
                 #       be hit. Use that opportunity to close the socket you
                 #       created above when a client connected.
+                # conn.shutdown()
                 conn.close()
                 print(
                     'echo complete, client connection closed\n', file=log_buffer
                 )
+
     except KeyboardInterrupt:
         # TODO: Use the python KeyboardInterrupt exception as a signal to
         #       close the server socket and exit from the server function.
